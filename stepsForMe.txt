@@ -1,0 +1,10 @@
+
+api i use 
+NewsAPI.org: 
+apiKey  ="d2e6413809094cdbbe2e8a670eb00cd2"
+
+New York api 
+apiKey  ="OV8TF6nXulmHStgNGrcfmDl2xm0j0lMK"
+
+https://api.nytimes.com/svc/search/v2/articlesearch.json?q=apple&api-key=OV8TF6nXulmHStgNGrcfmDl2xm0j0lMK
+ console.log("res",response.data?.response?.docs)
