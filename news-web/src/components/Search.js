@@ -1,45 +1,160 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useNews } from "../store/NewsContext";
 import { fetchNews } from "../services/newsService";
-import { InputGroup, FormControl, Button } from "react-bootstrap";
+import {
+  InputGroup,
+  FormControl,
+  Button,
+  Dropdown,
+  Spinner,
+  Container,
+  Row,
+  Col,
+} from "react-bootstrap";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+import { NewsSources } from "../common/constant";
 import _debounce from "lodash/debounce";
 
 const Search = () => {
-  const { updateNews,updateSearchResults } = useNews();
+  const {
+    currentPage,
+    updateSearchResults,
+    updatePagination,
+    loading,
+    setLoading,
+    setError,
+  } = useNews();
+  const newsSources = [
+    NewsSources.NEWS_API,
+    NewsSources.NEWS_API_Every,
+    NewsSources.GUARDIAN_API,
+    NewsSources.NEW_YORK_API,
+    
+
+  ];
+
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchCategory, setSearchCategory] = useState("");
+  const [searchSource, setSearchSource] = useState(NewsSources.NEWS_API);
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
 
-  // Define a debounce function with a delay of 500 milliseconds
-  const debouncedSearch = _debounce(async (term) => {
+  const handleSourceSelect = (selectedSource) => {
+    setSearchSource(selectedSource);
+  };
+
+  useEffect(() => {
+    handleSearch();
+  }, [currentPage]);
+
+  useEffect(() => {
+    updatePagination(1, 1);
+  }, [searchSource]);
+
+  const handleSearch = async () => {
+    const searchOptions = {
+      searchTerm,
+      searchSource,
+      pageToSearch: currentPage,
+      searchCategory,
+      fromDate,
+      toDate,
+    };
+
     try {
-      const newsData = await fetchNews(term);
-      updateSearchResults(newsData);
-    } catch (error) {
-      // Handle error
-    }
-  }, 5000);
+      setLoading(true);
+      updateSearchResults([]);
 
-    useEffect(() => {
-    debouncedSearch(searchTerm);
-    // Cleanup the debounced function on component unmount
-    return () => debouncedSearch.cancel();
-  }, [searchTerm]);
+      const newsData = await fetchNews(searchOptions);
+      const { pages, newsList } = newsData;
+      console.log("pages", pages);
+      updateSearchResults(newsList);
+      updatePagination(currentPage, pages);
+    } catch (err) {
+      setError(err.message);
+      console.error("error in handleSearch", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <InputGroup className="mb-3">
-      <FormControl
-        placeholder="Enter search term"
-        aria-label="Enter search term"
-        aria-describedby="basic-addon2"
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-         
-        }}
-      />
-        <Button variant="outline-secondary" onClick={debouncedSearch}>
-          Search
-        </Button>
-    </InputGroup>
+    <Container className="mt-4">
+      <Row className="mb-3">
+        <Col xs={12} md={4} className="mb-3 mb-md-0">
+          <FormControl
+            placeholder="Enter search term"
+            aria-label="Enter search term"
+            aria-describedby="basic-addon2"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </Col>
+        <Col xs={12} md={4} className="mb-3 mb-md-0">
+          <FormControl
+            placeholder="Enter search Category"
+            aria-label="Enter search Category"
+            aria-describedby="basic-addon2"
+            value={searchCategory}
+            onChange={(e) => setSearchCategory(e.target.value)}
+          />
+        </Col>
+        <Col xs={12} md={2} className="mb-3 mb-md-0 d-md-flex align-items-end">
+          <Dropdown onSelect={handleSourceSelect}>
+            <Dropdown.Toggle variant="outline-secondary" id="dropdown-basic">
+              {searchSource}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              {newsSources.map((source, index) => (
+                <Dropdown.Item key={index} eventKey={source}>
+                  {source}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        </Col>
+        <Col xs={12} md={2} className="mb-3 mb-md-0 d-md-flex align-items-end">
+          <Button
+            variant="outline-secondary"
+            onClick={handleSearch}
+            disabled={loading}
+          >
+            {loading ? (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+            ) : (
+              "Search"
+            )}
+          </Button>
+        </Col>
+      </Row>
+      <Row className="mb-3">
+        <Col xs={12} md={6} className="mb-3 mb-md-0">
+          <DatePicker
+            selected={fromDate}
+            onChange={(date) => setFromDate(date)}
+            placeholderText="From Date"
+            dateFormat="yyyy-MM-dd"
+          />
+        </Col>
+        <Col xs={12} md={6} className="mb-3 mb-md-0">
+          <DatePicker
+            selected={toDate}
+            onChange={(date) => setToDate(date)}
+            placeholderText="To Date"
+            dateFormat="yyyy-MM-dd"
+          />
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

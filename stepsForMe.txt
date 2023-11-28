@@ -8,3 +8,8 @@ apiKey  ="OV8TF6nXulmHStgNGrcfmDl2xm0j0lMK"
 
 https://api.nytimes.com/svc/search/v2/articlesearch.json?q=apple&api-key=OV8TF6nXulmHStgNGrcfmDl2xm0j0lMK
  console.log("res",response.data?.response?.docs)
+
+the gurdain 
+api-key=2d532acb-80ce-41dc-93ca-96e6354da216
+https://content.guardianapis.com/search?q=apple&api-key=test
+  console.log("res",response.data?.response?.results)
