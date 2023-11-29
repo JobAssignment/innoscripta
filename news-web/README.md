@@ -40,10 +40,11 @@ Before you begin, make sure you have Docker installed on your machine. You can d
 
     Once the image is built, run the Docker container with the following command:
 
-        ``` 
-        docker run -p 8080:3000 news-web
+        ```
+        docker run -p 8081:03000 news-web
         ```
 
+    make sure to use a aviable
     **Access the Application:**
 
     Open your web browser and navigate to http://localhost:8080 to access the React application running inside the Docker container.

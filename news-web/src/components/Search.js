@@ -96,9 +96,13 @@ const Search = () => {
             onChange={(e) => setSearchCategory(e.target.value)}
           />
         </Col>
-        <Col xs={12} md={2} className="mb-3 mb-md-0 d-md-flex align-items-end">
-          <Dropdown onSelect={handleSourceSelect}>
-            <Dropdown.Toggle variant="outline-secondary" id="dropdown-basic">
+        <Col xs={12} md={2} className="mb-3 mb-md-0">
+          <Dropdown onSelect={handleSourceSelect} className="d-flex">
+            <Dropdown.Toggle
+              variant="outline-secondary"
+              id="dropdown-basic"
+              className="w-100"
+            >
               {searchSource}
             </Dropdown.Toggle>
 
@@ -111,11 +115,12 @@ const Search = () => {
             </Dropdown.Menu>
           </Dropdown>
         </Col>
-        <Col xs={12} md={2} className="mb-3 mb-md-0 d-md-flex align-items-end">
+        <Col xs={12} md={2} className="mb-3 mb-md-0">
           <Button
             variant="outline-secondary"
             onClick={handleSearch}
             disabled={loading}
+            className="w-100"
           >
             {loading ? (
               <Spinner
@@ -138,6 +143,7 @@ const Search = () => {
             onChange={(date) => setFromDate(date)}
             placeholderText="From Date"
             dateFormat="yyyy-MM-dd"
+            className="w-100 form-control mt-2"
           />
         </Col>
         <Col xs={12} md={6} className="mb-3 mb-md-0">
@@ -146,6 +152,7 @@ const Search = () => {
             onChange={(date) => setToDate(date)}
             placeholderText="To Date"
             dateFormat="yyyy-MM-dd"
+            className="w-100 form-control mt-2"
           />
         </Col>
       </Row>

@@ -48,7 +48,7 @@ export const fetchNews = async (searchOptions) => {
 export const fetchOpenApiNews = async (searchOptions) => {
   const {
     searchTerm,
-    pageTosearch,
+    pageToSearch,
     searchCategory,
     // fromDate,
     // toDate,
@@ -60,7 +60,7 @@ export const fetchOpenApiNews = async (searchOptions) => {
     const params = {
       q: searchTerm,
       apiKey: API_KEY,
-      page: pageTosearch,
+      page: pageToSearch,
       pageSize: PageSize,
     };
     if (searchCategory) {
@@ -87,7 +87,7 @@ export const fetchOpenApiNews = async (searchOptions) => {
   }
 };
 export const fetchNewYorkApiNews = async (searchOptions) => {
-  const { searchTerm, pageTosearch, searchCategory, fromDate, toDate } =
+  const { searchTerm, pageToSearch, searchCategory, fromDate, toDate } =
     searchOptions;
 
   const API_KEY = apiKeys[`${NewsSources.NEW_YORK_API}`];
@@ -97,7 +97,7 @@ export const fetchNewYorkApiNews = async (searchOptions) => {
     const params = {
       "api-key": API_KEY,
       q: searchTerm,
-      page: pageTosearch,
+      page: pageToSearch,
     };
     if (searchCategory) {
       params["category"] = searchCategory;
@@ -125,7 +125,7 @@ export const fetchNewYorkApiNews = async (searchOptions) => {
 };
 
 export const fetchGuardianApiNews = async (searchOptions) => {
-  const { searchTerm, pageTosearch, searchCategory, fromDate, toDate } =
+  const { searchTerm, pageToSearch, searchCategory, fromDate, toDate } =
     searchOptions;
 
   const API_KEY = apiKeys[`${NewsSources.GUARDIAN_API}`];
@@ -135,7 +135,7 @@ export const fetchGuardianApiNews = async (searchOptions) => {
     const params = {
       "api-key": API_KEY,
       q: searchTerm,
-      page: pageTosearch,
+      page: pageToSearch,
     };
     if (searchCategory) {
       params["section"] = searchCategory;
