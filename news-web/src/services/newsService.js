@@ -2,44 +2,46 @@ import axios from "axios";
 import { apiKeys, apiUrls } from "../config";
 import { normlaizeNewYorkApiData, normlaizeGuardianApiData } from "./apiUtils";
 import { NewsSources, PageSize } from "../common/constant";
-import mockApiData from "../apiRequest/apiRes";
 const calculateNumberOfPages = (totalHits, resultsPerPage) =>
   Math.ceil(totalHits / resultsPerPage);
 
 export const fetchNews = async (searchOptions) => {
   const FUNC_NAME = "fetchNews";
-  const { searchSource, pageTosearch } = searchOptions;
+  const { searchSource } = searchOptions;
   let newsData, dataRecived;
+  try {
+    switch (searchSource) {
+      case NewsSources.NEW_YORK_API:
+        dataRecived = await fetchNewYorkApiNews(searchOptions);
+        const { pages: nyPages, list: nyList } = dataRecived;
+        const normlaizeDataNewsListNY = normlaizeNewYorkApiData(nyList);
+        newsData = { newsList: normlaizeDataNewsListNY, pages: nyPages };
+        break;
 
-  switch (searchSource) {
-    case NewsSources.NEW_YORK_API:
-      dataRecived = await fetchNewYorkApiNews(searchOptions);
-      const { pages: nyPages, list: nyList } = dataRecived;
-      const normlaizeDataNewsListNY = normlaizeNewYorkApiData(nyList);
-      newsData = { newsList: normlaizeDataNewsListNY, pages: nyPages };
-      break;
+      case NewsSources.GUARDIAN_API:
+        dataRecived = await fetchGuardianApiNews(searchOptions);
+        const { pages: guardianPages, list: guardianList } = dataRecived;
+        const normlaizeDataNewsListGuardian =
+          normlaizeGuardianApiData(guardianList);
+        newsData = {
+          newsList: normlaizeDataNewsListGuardian,
+          pages: guardianPages,
+        };
+        break;
 
-    case NewsSources.GUARDIAN_API:
-      dataRecived = await fetchGuardianApiNews(searchOptions);
-      const { pages: guardianPages, list: guardianList } = dataRecived;
-      const normlaizeDataNewsListGuardian =
-        normlaizeGuardianApiData(guardianList);
-      newsData = {
-        newsList: normlaizeDataNewsListGuardian,
-        pages: guardianPages,
-      };
-      break;
-
-    case NewsSources.NEWS_API || NewsSources.NEWS_API_Every:
-      dataRecived = await fetchOpenApiNews(searchOptions);
-      const { pages: newsPages, list: newsList } = dataRecived;
-      newsData = {
-        newsList: newsList,
-        pages: newsPages,
-      };
-      break;
+      case NewsSources.NEWS_API:
+        dataRecived = await fetchOpenApiNews(searchOptions);
+        const { pages: newsPages, list: newsList } = dataRecived;
+        newsData = {
+          newsList: newsList,
+          pages: newsPages,
+        };
+        break;
+    }
+    return newsData;
+  } catch (err) {
+    console.error(`${FUNC_NAME}-err`, err);
   }
-  return newsData;
 
   // call all 3 apis
 };
@@ -48,13 +50,12 @@ export const fetchOpenApiNews = async (searchOptions) => {
     searchTerm,
     pageTosearch,
     searchCategory,
-    fromDate,
-    toDate,
+    // fromDate,
+    // toDate,
     searchSource,
   } = searchOptions;
   const API_KEY = apiKeys[`${searchSource}`];
   const BASE_URL = apiUrls[`${searchSource}`];
-  console.log("base url ", BASE_URL);
   try {
     const params = {
       q: searchTerm,
@@ -65,12 +66,13 @@ export const fetchOpenApiNews = async (searchOptions) => {
     if (searchCategory) {
       params["category"] = searchCategory;
     }
-    if (fromDate) {
-      params["from"] = searchCategory;
-    }
-    if (toDate) {
-      params["to"] = searchCategory;
-    }
+    // doesnot support date
+    // if (fromDate) {
+    //   params["from"] = searchCategory;
+    // }
+    // if (toDate) {
+    //   params["to"] = searchCategory;
+    // }
 
     const response = await axios.get(BASE_URL, {
       params,
@@ -82,20 +84,11 @@ export const fetchOpenApiNews = async (searchOptions) => {
     return { list, pages };
   } catch (error) {
     console.error("Error fetching news:", error);
-    console.error("BASE_URL:", BASE_URL, "API_KEY", API_KEY);
-
-    throw error;
   }
 };
 export const fetchNewYorkApiNews = async (searchOptions) => {
-  const {
-    searchTerm,
-    pageTosearch,
-    searchCategory,
-    fromDate,
-    toDate,
-    searchS,
-  } = searchOptions;
+  const { searchTerm, pageTosearch, searchCategory, fromDate, toDate } =
+    searchOptions;
 
   const API_KEY = apiKeys[`${NewsSources.NEW_YORK_API}`];
   const BASE_URL = apiUrls[`${NewsSources.NEW_YORK_API}`];
@@ -124,14 +117,10 @@ export const fetchNewYorkApiNews = async (searchOptions) => {
     const list = res.docs;
     const hits = res?.meta?.hits;
     const pages = calculateNumberOfPages(hits, PageSize);
-    console.log("res newyorkApi  list ", res);
 
     return { list, pages };
   } catch (error) {
     console.error("Error fetching news:", error);
-    console.error("BASE_URL:", BASE_URL, "API_KEY", API_KEY);
-
-    throw error;
   }
 };
 
@@ -164,17 +153,9 @@ export const fetchGuardianApiNews = async (searchOptions) => {
     const res = response?.data?.response || "";
     const pages = res?.pages;
     const list = response?.data?.response?.results || [];
-    console.log(
-      "res guardianApi  list response.data ",
-      response?.data?.response,
-      "pages",
-      pages
-    );
+
     return { list, pages };
   } catch (error) {
     console.error("Error fetching news:", error);
-    console.error("BASE_URL:", BASE_URL, "API_KEY", API_KEY);
-
-    throw error;
   }
 };

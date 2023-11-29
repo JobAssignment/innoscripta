@@ -1,8 +1,7 @@
 const NewsSources = {
-  NEWS_API_Every: "News API (support filtter date from to )",
-  NEWS_API: "News API (support category only)",
+  NEWS_API: "News API (only category)",
   GUARDIAN_API: "Guardian API",
-  NEW_YORK_API: "New York API HeadLine ",
+  NEW_YORK_API: "New York API",
 };
 const PageSize = 10;
 

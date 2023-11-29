@@ -10,9 +10,7 @@ export const NewsProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const updateAllNews = (data) => {
-    setAllNews(data);
-  };
+
 
   const updateSearchResults = (data) => {
     const { datalist, pages } = data;
@@ -33,7 +31,6 @@ export const NewsProvider = ({ children }) => {
         searchResults,
         currentPage,
         totalPages,
-        updateAllNews,
         updateSearchResults,
         updatePagination,
         setLoading,

@@ -10,7 +10,7 @@ const Error= () => {
       // Automatically clear the error after 3 seconds
       const timeoutId = setTimeout(() => {
         setError(null);
-      }, 3000);
+      }, 4000);
 
       // Clear the timeout when the component unmounts
       return () => clearTimeout(timeoutId);

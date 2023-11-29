@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNews } from "../store/NewsContext";
 import { fetchNews } from "../services/newsService";
 import {
-  InputGroup,
   FormControl,
   Button,
   Dropdown,
@@ -15,7 +14,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import { NewsSources } from "../common/constant";
-import _debounce from "lodash/debounce";
 
 const Search = () => {
   const {
@@ -26,13 +24,11 @@ const Search = () => {
     setLoading,
     setError,
   } = useNews();
+
   const newsSources = [
     NewsSources.NEWS_API,
-    NewsSources.NEWS_API_Every,
     NewsSources.GUARDIAN_API,
     NewsSources.NEW_YORK_API,
-    
-
   ];
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,17 +37,17 @@ const Search = () => {
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
 
-  const handleSourceSelect = (selectedSource) => {
-    setSearchSource(selectedSource);
-  };
-
   useEffect(() => {
-    handleSearch();
+    searchTerm && handleSearch();
   }, [currentPage]);
 
   useEffect(() => {
     updatePagination(1, 1);
   }, [searchSource]);
+
+  const handleSourceSelect = (selectedSource) => {
+    setSearchSource(selectedSource);
+  };
 
   const handleSearch = async () => {
     const searchOptions = {
@@ -69,7 +65,6 @@ const Search = () => {
 
       const newsData = await fetchNews(searchOptions);
       const { pages, newsList } = newsData;
-      console.log("pages", pages);
       updateSearchResults(newsList);
       updatePagination(currentPage, pages);
     } catch (err) {
